@@ -5,10 +5,10 @@ from launch_ros.actions import Node
 import xacro
 
 def generate_launch_description():
-    pkg_name = 'urdf_tutorial'
+    pkg_name = 'orin_car'
     
     # 확인하고 싶은 xacro 파일명 (여기서는 robot_4.xacro)
-    file_subpath = 'urdf/robot_4_v2.xacro'
+    file_subpath = 'urdf/robot.xacro'
 
     # Xacro 파일 경로 설정 및 변환
     pkg_path = os.path.join(get_package_share_directory(pkg_name))

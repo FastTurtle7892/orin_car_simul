@@ -2,7 +2,7 @@ import os
 from glob import glob
 from setuptools import setup
 
-package_name = 'urdf_tutorial'
+package_name = 'orin_car'
 
 setup(
     name=package_name,
@@ -24,7 +24,6 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-			'real_teleop = urdf_tutorial.real_vehicle_teleop:main'
         ],
     },
 )
