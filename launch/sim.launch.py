@@ -15,12 +15,13 @@ def generate_launch_description():
         ),
         launch_arguments={"use_sim_time": "true"}.items(),
     )
-
+    world_path = os.path.join(get_package_share_directory(package_name), 'worlds', 'obstacle.world')
     # Include the Gazebo launch file
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [os.path.join(get_package_share_directory("gazebo_ros"), "launch", "gazebo.launch.py")]
         ),
+		launch_arguments={'world': world_path}.items(),
     )
 
     # [수정 포인트] 로봇을 z=0.5m 높이에서 소환하도록 -z 옵션 추가
