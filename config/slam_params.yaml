@@ -1,0 +1,27 @@
+slam_toolbox:
+  ros__parameters:
+    # [시뮬레이션 필수 설정] 가제보 시간을 사용하도록 설정
+    use_sim_time: true
+
+    # 1. 핵심: 프레임 이름 맞추기 (이 부분이 문제 해결의 열쇠입니다)
+    odom_frame: odom
+    map_frame: map
+    base_frame: base_link  # SLAM에게 로봇 중심이 base_footprint가 아니라 base_link라고 알려줍니다.
+    scan_topic: /scan
+
+    # 2. 매핑 모드 및 성능 설정
+    mode: mapping
+    map_update_interval: 0.5
+    transform_publish_period: 0.05  # TF 발행 주기
+    resolution: 0.05
+    max_laser_range: 12.0
+    minimum_time_interval: 0.5
+    transform_timeout: 0.2
+    tf_buffer_duration: 30.
+    stack_size_to_use: 40000000 # 메모리 스택 크기 (대규모 맵핑 시 필요)
+
+    # 3. 최적화 및 노이즈 처리
+    enable_interactive_mode: true
+    solver_plugin: solver_plugins::CeresSolver
+    solver_options:
+      iterative_refinement_max_passes: 3

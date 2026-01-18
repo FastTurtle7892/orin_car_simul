@@ -34,16 +34,30 @@ def generate_launch_description():
         output="screen",
     )
 
+    joint_state_publisher = Node(
+        package='joint_state_publisher',
+        executable='joint_state_publisher',
+        name='joint_state_publisher',
+        parameters=[{'use_sim_time': True}],
+    )
+
+    slam_config_path = os.path.join(get_package_share_directory(package_name), 'config', 'slam_params.yaml')
+
+    # SLAM Toolbox를 실행할 때 파라미터 파일을 인자로 넘겨줍니다.
     slam = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             os.path.join(get_package_share_directory('slam_toolbox'), 'launch', 'online_async_launch.py')
         ]),
-        launch_arguments={'use_sim_time': 'true'}.items()
+        launch_arguments={
+            'use_sim_time': 'true',
+            'slam_params_file': slam_config_path
+        }.items()
     )
 
     return LaunchDescription(
         [
             rsp,
+			joint_state_publisher,
             gazebo,
             spawn_entity,
 			slam,
