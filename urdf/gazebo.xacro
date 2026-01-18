@@ -23,7 +23,7 @@
             <max_steer>0.6</max_steer>
             <max_steering_angle>7.85</max_steering_angle>
             
-            <max_speed>2.5</max_speed>
+            <max_speed>1.5</max_speed>
 
             <max_wheel_acceleration>10.0</max_wheel_acceleration>
             <max_wheel_torque>200.0</max_wheel_torque>
@@ -37,7 +37,7 @@
             <linear_velocity_i_range>0 0</linear_velocity_i_range>
 
             <publish_odom>true</publish_odom>
-            <publish_odom_tf></publish_odom_tf>
+            <publish_odom_tf>false</publish_odom_tf>
             <publish_wheel_tf>true</publish_wheel_tf>
             <publish_distance>true</publish_distance>
 

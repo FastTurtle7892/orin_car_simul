@@ -5,9 +5,14 @@ from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 
-
 def generate_launch_description():
     package_name = "orin_car"
+
+    # [수정 1] 맵 파일 경로 (사용자 홈 디렉토리 기준)
+    map_file_path = os.path.join(os.path.expanduser('~'), 'maps', 'my_map.yaml')
+    
+    # [수정 2] 우리가 만든 커스텀 파라미터 파일 경로
+    params_file_path = os.path.join(get_package_share_directory(package_name), 'config', 'nav2_params.yaml')
 
     rsp = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -17,23 +22,21 @@ def generate_launch_description():
     )
 
     world_path = os.path.join(get_package_share_directory(package_name), 'worlds', 'obstacle.world')
-    
-	# Include the Gazebo launch file
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [os.path.join(get_package_share_directory("gazebo_ros"), "launch", "gazebo.launch.py")]
         ),
-		launch_arguments={'world': world_path}.items(),
+        launch_arguments={'world': world_path}.items(),
     )
 
-    # [수정 포인트] 로봇을 z=0.5m 높이에서 소환하도록 -z 옵션 추가
     spawn_entity = Node(
         package="gazebo_ros",
         executable="spawn_entity.py",
         arguments=["-topic", "robot_description", "-entity", "my_bot", "-z", "0.5"],
         output="screen",
     )
-
+    
+    # [수정 3] Joint State Publisher 안전 장치
     joint_state_publisher = Node(
         package='joint_state_publisher',
         executable='joint_state_publisher',
@@ -41,43 +44,43 @@ def generate_launch_description():
         parameters=[{'use_sim_time': True}],
     )
 
-    slam_config_path = os.path.join(get_package_share_directory(package_name), 'config', 'slam_params.yaml')
-
+    # [수정 4] RF2O 노드 (SLAM 때와 동일한 설정)
     rf2o_node = Node(
         package='rf2o_laser_odometry',
         executable='rf2o_laser_odometry_node',
         name='rf2o_laser_odometry',
         output='screen',
         parameters=[{
-            'laser_scan_topic': '/scan',     # 가제보 라이다 토픽 이름
-            'odom_topic': '/odom_rf2o',      # rf2o가 발행할 오도메트리 토픽 (가제보 odom과 안 겹치게)
-            'publish_tf': True,              # 이제 rf2o가 odom->base_link TF를 담당합니다.
-            'base_frame_id': 'base_link',    # 로봇 중심 프레임
-            'odom_frame_id': 'odom',         # 오도메트리 프레임
+            'laser_scan_topic': '/scan',
+            'odom_topic': '/odom_rf2o',
+            'publish_tf': True,
+            'base_frame_id': 'base_link',
+            'odom_frame_id': 'odom',
             'init_pose_from_topic': '',
-            'freq': 20.0,                    # 20Hz 주기로 위치 계산
-            'use_sim_time': True             # [핵심] 시뮬레이션 시간 동기화
+            'freq': 40.0,
+            'use_sim_time': True
         }],
     )
 
-    # SLAM Toolbox를 실행할 때 파라미터 파일을 인자로 넘겨줍니다.
-    slam = IncludeLaunchDescription(
+    # [수정 5] Nav2 실행 (커스텀 파라미터 파일 적용)
+    nav2 = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
-            os.path.join(get_package_share_directory('slam_toolbox'), 'launch', 'online_async_launch.py')
+            os.path.join(get_package_share_directory('nav2_bringup'), 'launch', 'bringup_launch.py')
         ]),
         launch_arguments={
+            'map': map_file_path,
             'use_sim_time': 'true',
-            'slam_params_file': slam_config_path
+            'params_file': params_file_path  # [중요] 기본값이 아닌 우리 파일 사용
         }.items()
     )
 
     return LaunchDescription(
         [
             rsp,
-			joint_state_publisher,
+            joint_state_publisher,
             gazebo,
             spawn_entity,
-			rf2o_node,
-			slam,
+            rf2o_node,
+            nav2
         ]
     )
