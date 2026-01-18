@@ -15,8 +15,10 @@ def generate_launch_description():
         ),
         launch_arguments={"use_sim_time": "true"}.items(),
     )
+
     world_path = os.path.join(get_package_share_directory(package_name), 'worlds', 'obstacle.world')
-    # Include the Gazebo launch file
+    
+	# Include the Gazebo launch file
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [os.path.join(get_package_share_directory("gazebo_ros"), "launch", "gazebo.launch.py")]
@@ -32,10 +34,18 @@ def generate_launch_description():
         output="screen",
     )
 
+    slam = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            os.path.join(get_package_share_directory('slam_toolbox'), 'launch', 'online_async_launch.py')
+        ]),
+        launch_arguments={'use_sim_time': 'true'}.items()
+    )
+
     return LaunchDescription(
         [
             rsp,
             gazebo,
             spawn_entity,
+			slam,
         ]
     )
