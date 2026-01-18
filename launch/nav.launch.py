@@ -46,21 +46,21 @@ def generate_launch_description():
 
     # [수정 4] RF2O 노드 (SLAM 때와 동일한 설정)
     rf2o_node = Node(
-        package='rf2o_laser_odometry',
-        executable='rf2o_laser_odometry_node',
-        name='rf2o_laser_odometry',
-        output='screen',
-        parameters=[{
-            'laser_scan_topic': '/scan',
+       package='rf2o_laser_odometry',
+       executable='rf2o_laser_odometry_node',
+       name='rf2o_laser_odometry',
+       output='screen',
+       parameters=[{
+           'laser_scan_topic': '/scan',
             'odom_topic': '/odom_rf2o',
-            'publish_tf': True,
-            'base_frame_id': 'base_link',
-            'odom_frame_id': 'odom',
-            'init_pose_from_topic': '',
-            'freq': 40.0,
-            'use_sim_time': True
-        }],
-    )
+           'publish_tf': True,
+           'base_frame_id': 'base_link',
+           'odom_frame_id': 'odom',
+           'init_pose_from_topic': '',
+           'freq': 40.0,
+           'use_sim_time': True
+       }],
+   )
 
     # [수정 5] Nav2 실행 (커스텀 파라미터 파일 적용)
     nav2 = IncludeLaunchDescription(
